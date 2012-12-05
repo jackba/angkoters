@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class dbManager extends SQLiteOpenHelper{
 	private static String namaDB = "angkotersDB";
-	private String sql = "CREATE TABLE daftarRuteTB(idRute INTEGER PRIMARY KEY AUTOINCREMENT , kodeAngkot TEXT, ruteAngkot TEXT)";
+	private String sql = "CREATE TABLE daftarRuteTB(_id INTEGER PRIMARY KEY AUTOINCREMENT , kodeAngkot TEXT, ruteAngkot TEXT)";
 	private String query = "SELECT idRute, kodeAngkot, ruteAngkot";
 	public dbManager(Context context) {
 		super(context, namaDB , null,1);
