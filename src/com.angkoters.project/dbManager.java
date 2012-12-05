@@ -15,6 +15,7 @@ public class dbManager extends SQLiteOpenHelper{
 	}
 	
 	public void onCreate(SQLiteDatabase db){
+    db.execSQL("DROP TABLE IF EXISTS daftarRuteTB");
 		db.execSQL(sql);
 	}
 
