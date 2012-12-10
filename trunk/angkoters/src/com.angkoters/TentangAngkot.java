@@ -12,7 +12,6 @@ public class TentangAngkot extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.viewtentangangkot);
-        DatabaseManager dbm = new DatabaseManager(this);
         View gambar =     findViewById(R.id.logo);
         gambar.setOnClickListener(this);
         
