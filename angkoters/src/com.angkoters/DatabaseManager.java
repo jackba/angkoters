@@ -1,24 +1,28 @@
 package com.angkoters.project;
 
 import android.content.Context;
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DatabaseManager{
 	private static String namaDB = "AngkotersDB";
-  private static final String namaTabel = "DataAngkot";
-  private static final String ID = "_id";
-  private static final String KODE_ANGKOT = "kodeangkot";
-  private static final String RUTE_ANGKOT = "ruteangkot";
-  private static final String BIAYA_ANGKOT = "biayaangkot";
-  private static final String WAKTU_OPERASI = "waktuoperasi";
-	private String sql = "CREATE TABLE " + DataAngkot + "("+
+  private static String namaTabel = "DataAngkot";
+  private static String ID = "_id";
+  private static String KODE_ANGKOT = "kodeangkot";
+  private static String RUTE_ANGKOT = "ruteangkot";
+  private static int BIAYA_ANGKOT;
+  private static String JAM_BERANGKAT = "jamberangkat";
+  privte static String JAM_PULANG = "jampulang";
+	private String namaTabel = "CREATE TABLE " + DataAngkot + "("+
    ID +" INTEGER PRIMARY KEY AUTOINCREMENT , "+
    KODE_ANGKOT+" TEXT, "+
    RUTE_ANGKOT+" TEXT, "+
    BIAYA_ANGKOT+" INTEGER, "+
-   WAKTU_OPERASI+" TEXT)";
+   JAM_BERANGKAT+" TEXT," + 
+   JAM_PULANG+"TEXT)";
 
   private Context context;
   private SQLiteDatabase db;
@@ -32,12 +36,14 @@ public class DatabaseManager{
    
   private static class DatabaseOpenHelper extends SQLiteDatabase{
       public void onCreate(SQLiteDatabase db){
-        db.execSQL("DROP TABLE IF EXISTS namaTabel");
-        db.execSQL(sql);
+        db.execSQL(namaTabel);
+        
      }
 
        @Override
        public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
+        db.execSQL("DROP TABLE IF EXISTS"+namaTabel);
+        onCreate(db);
 		
      }
   }	
