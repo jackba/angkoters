@@ -64,15 +64,14 @@ public class DatabaseManager{
      
     try
     {
-      cur = db.query(namaTabel, new String[]{ID, KODE_ANGKOT, RUTE_ANGKOT,BIAYA_ANGKOT, WAKTU_OPERASI},null,null,null,null,null);
+      cur = db.query(namaTabel, new String[]{ID, KODE_ANGKOT, RUTE_ANGKOT},null,null,null,null,null);
       if(!cur.moveToFirst()){
         do{
         ArrayList<Object> dataList = ArrayList<Object>();
-        dataList.add(cur.getLong(0));
-        dataList.add(cur.getLong(1));
-        dataList.add(cur.getLong(2));
-        dataList.add(cur.getLong(3));
-        dataList.add(cur.getLong(4));
+        dataList.add(cur.getString(0));
+        dataList.add(cur.getString(1));
+        dataList.add(cur.getString(2));
+        
         dataArray.add(dataList);
         } while (cur.moveToNext());
         }
