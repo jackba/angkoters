@@ -4,7 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
+import android.content.ContentValues;
+import android.widget.Toast;
 
 public class DatabaseManager{
 	private static String namaDB = "AngkotersDB";
@@ -36,6 +37,7 @@ public class DatabaseManager{
   private static class DatabaseOpenHelper extends SQLiteDatabase{
       public void onCreate(SQLiteDatabase db){
         db.execSQL(namaTabel);
+        isiTabel();
         
      }
 
@@ -51,16 +53,76 @@ public class DatabaseManager{
 		return(getReadableDatabase().rawQuery("SELECT * FROM namaTabel",null));
 	}
 	
-	public String getIdAngkot(Cursor cur){
+	 public String getIdAngkot(Cursor cur){
 		return cur.getString(0);
 	}
 	
-	public String getKodeAngkot(Cursor cur){
+   public String getKodeAngkot(Cursor cur){
 		return cur.getString(1);
 	}
+   
+   public void closeDB(){
+     if(dbHelper != null){
+     dbHelper.close();
+    }
+  }
 	
-	public String getRuteAngkot(Cursor cur){
+   public String getRuteAngkot(Cursor cur){
 		return cur.getString(2);
+	}
+   
+   public void buatTabel(String kodeangkot, String ruteangkot,
+			String biayaangkot, String jammulai, String jamselesai) {
+
+		ContentValues isiBaris = new ContentValues();
+		isiBaris.put(KODE_ANGKOT, kodeangkot);
+		isiBaris.put(RUTE_ANGKOT, ruteangkot);
+		isiBaris.put(BIAYA_ANGKOT, biayaangkot);
+		isiBaris.put(JAM_MULAI, jammulai);
+		isiBaris.put(JAM_SELESAI, jamselesai);
+		try {
+			 
+			// db.delete(NAMA_TABEL, null, null);
+			db.insert(NAMA_TABEL, null, isiBaris);
+		} catch (Exception e) {
+
+			Toast.makeText(context, "DB Error, " + e.toString(),
+					Toast.LENGTH_LONG).show();
+		}
+		
+	}
+   
+   public Cursor getDataRuteAngkot(String input) throws SQLException {
+		Cursor cur = null;
+		if (input == null || input.length() == 0) {
+			cur = db.query(NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
+					RUTE_ANGKOT, BIAYA_ANGKOT, JAM_MULAI, JAM_SELESAI }, null,
+					null, null, null, null);
+
+		} else {
+			cur = db.query(true, NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
+					RUTE_ANGKOT, BIAYA_ANGKOT, JAM_MULAI, JAM_SELESAI },
+					// KODE_ANGKOT +"OR"+
+					RUTE_ANGKOT + " like '%" + input + "%'", null, null, null,
+					null, null);
+		}
+		if (cur != null) {
+			cur.moveToFirst();
+		}
+		return cur;
+
+	}
+   
+   public Cursor getDataAngkot() {
+
+		Cursor cur = db.query(NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
+				RUTE_ANGKOT, BIAYA_ANGKOT, JAM_MULAI, JAM_SELESAI }, null,
+				null, null, null, null);
+
+		if (cur != null) {
+			cur.moveToFirst();
+		}
+		return cur;
 	}
    
      public ArrayList<ArrayList<Object>> ambilSemuaBaris(){
@@ -70,7 +132,8 @@ public class DatabaseManager{
     try
     {
       cur = db.query(namaTabel, new String[]{ID, KODE_ANGKOT, RUTE_ANGKOT},null,null,null,null,null);
-      if(!cur.moveToFirst()){
+      cur.moveToFirst();
+      if(!cur.isAfterLast()){
         do{
         ArrayList<Object> dataList = ArrayList<Object>();
         dataList.add(cur.getString(0));
@@ -83,9 +146,26 @@ public class DatabaseManager{
       
     } catch(Exception e){
       e.printStackTrace();
-      log.e("Database Error", e.toString());
+      
     }
     return dataArray;
   }
+  
+  public void isiTabel() {
+
+		buatTabel(
+				"C",
+				"Demak - Blauran - Karangmenjangan"
+						+ "Berangkat : Terminal Jl. Sedayu - Demak - Dupak - Ps. Turi - Semarang - Kranggan - Praban - "
+						+ "Siola - Gentengkali - Ngemplak - Walikota Moestadjab - Kodya - Ambengan - Kusumabangsa - THR - "
+						+ "Ngaglik - Tambaksari - Pacarkeling - Kalasan - Jolotundo - Bronggalan - Tambangboyo - "
+						+ "Prof. Dr. Moestopo - RS.Dr. Soetomo - Karangmenjangan - Gubeng Airlangga - Dharmawangsa."
+						+ "Kembali : Kedungsroko - Pacarkeling - Residen Sudirman - Ambengan - Ngemplak - Gentengkali - Siola - Praban - Pirngadi -"
+						+ "Pawiyatan - Semarang - Ps. Turi - Dupak - Demak.",
+				"3000",
+				"05.00",
+				"20.30");
+
+	}
 
 }
