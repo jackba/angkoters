@@ -25,7 +25,6 @@ public class DetailAngkot extends Activity{
 	}
 	
 	private void viewDetailAngkot(){
-		ambilParameter();
 		Cursor cur = dm.getDataRuteAngkot(ambilParameter());
 		
 		String kolomKanan [] = new String[]{
