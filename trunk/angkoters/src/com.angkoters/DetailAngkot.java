@@ -3,15 +3,18 @@ package com.angkoters;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 public class DetailAngkot extends Activity{
 	
 	DatabaseManager dm;
-	
+	SimpleCursorAdapter adapterCur;
+   
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.viewdaftarangkot);
+		setContentView(R.layout.viewdetailangkot);
  
 		dm = new DatabaseManager(this);
 		viewDetailAngkot();
@@ -32,9 +35,13 @@ public class DetailAngkot extends Activity{
 			dm.JAM_SELESAI
 		};
 		
-		int tempat [] = new int[]{
+		int tempat [] = new int[]{R.id.textView1, R.id.textView2, R.id.textView3,
+				R.id.textView4, R.id.textView5
 				
 		};
+     adapterCur = new SimpleCursorAdapter(this, R.layout.viewdetailangkot2, cur, isi, tempat);
+     ListView list = (ListView) findViewById(R.id.listViewDetailAngkot);
+     list.setAdapter(adapterCur);
 	}
 
 }
