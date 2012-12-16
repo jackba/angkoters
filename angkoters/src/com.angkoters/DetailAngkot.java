@@ -27,12 +27,12 @@ public class DetailAngkot extends Activity{
 	private void viewDetailAngkot(){
 		Cursor cur = dm.getDataRuteAngkot(ambilParameter());
 		
-		String kolomKanan [] = new String[]{
+		String isi [] = new String[]{
 			dm.ID, dm.KODE_ANGKOT, dm.RUTE_ANGKOT, dm.BIAYA_ANGKOT, dm.JAM_MULAI,
 			dm.JAM_SELESAI
 		};
 		
-		int kolomKiri [] = new int[]{
+		int tempat [] = new int[]{
 				
 		};
 	}
