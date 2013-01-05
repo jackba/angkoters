@@ -16,17 +16,12 @@ public class DatabaseManager{
   private static int BIAYA_ANGKOT;
   private static String JAM_BERANGKAT = "jamberangkat";
   privte static String JAM_PULANG = "jampulang";
-	private String namaTabel = "CREATE TABLE " + DataAngkot + "("+
-   ID +" INTEGER PRIMARY KEY AUTOINCREMENT , "+
-   KODE_ANGKOT+" TEXT, "+
-   RUTE_ANGKOT+" TEXT, "+
-   BIAYA_ANGKOT+" INTEGER, "+
-   JAM_BERANGKAT+" TEXT," + 
-   JAM_PULANG+"TEXT)";
+	
 
   private Context context;
   private SQLiteDatabase db;
   private DatabaseOpenHelper dbHelper;
+  private Cursor hasilQuery;
    
 	public DatabaseManager(Context ctx) {
 		this.context = ctx;
@@ -37,7 +32,6 @@ public class DatabaseManager{
   private static class DatabaseOpenHelper extends SQLiteDatabase{
       public void onCreate(SQLiteDatabase db){
         db.execSQL(namaTabel);
-        isiTabel();
         
      }
 
@@ -115,14 +109,14 @@ public class DatabaseManager{
    
    public Cursor getDataAngkot() {
 
-		Cursor cur = db.query(NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
+		hasilQuery = db.query(NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
 				RUTE_ANGKOT, BIAYA_ANGKOT, JAM_MULAI, JAM_SELESAI }, null,
 				null, null, null, null);
 
-		if (cur != null) {
-			cur.moveToFirst();
+		if (hasilQuery != null) {
+			hasilQuery.moveToFirst();
 		}
-		return cur;
+		return hasilQuery;
 	}
    
      public ArrayList<ArrayList<Object>> ambilSemuaBaris(){
