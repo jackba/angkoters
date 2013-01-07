@@ -111,8 +111,8 @@ public class DatabaseManager{
 		
 	}
    
-   public Cursor getDataRuteAngkot(String input) throws SQLException {
-		Cursor cur = null;
+   public Cursor getSOMEDataAngkot(String input) throws SQLException {
+		Cursor cur;
 		if (input == null || input.length() == 0) {
 			cur = db.query(NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
 					RUTE_ANGKOT, BIAYA_ANGKOT, JAM_MULAI, JAM_SELESAI }, null,
@@ -122,7 +122,7 @@ public class DatabaseManager{
 			cur = db.query(true, NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
 					RUTE_ANGKOT, BIAYA_ANGKOT, JAM_MULAI, JAM_SELESAI },
 					// KODE_ANGKOT +"OR"+
-					RUTE_ANGKOT + " like '%" + input + "%'", null, null, null,
+					RUTE_ANGKOT + "||" + KODE_ANGKOT + " like '%" + input + "%'", null, null, null,
 					null, null);
 		}
 		if (cur != null) {
