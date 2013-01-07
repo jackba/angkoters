@@ -8,71 +8,92 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
- 
+import android.widget.FilterQueryProvider;
+import android.widget.SimpleCursorAdapter;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.database.Cursor;
+import android.text.Editable;
+import android.text.TextWatcher;
+
+
 public class DaftarAngkot extends Activity {
-	ListView lv;
-	String[] kodeangkot= {};
-	String[] idangkot={};
-	 
-	DatabaseManager dm;
- 
+	ListView lv;  
+	private DatabaseManager dm;
+  private SimpleCursorAdapter adapter;
+	private ListView listview;
+	private ProgressDialog loadDB;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.viewdaftarangkot);
- 
-		dm = new DatabaseManager(this);
-		dm.isiTabel();
- 
-		lv = (ListView) findViewById(R.id.listViewAngkot);
-		
+		setContentView(R.layout.viewdaftarangkot);   
+  	﻿ processingDB();
 		ambilData();
 	} 
+  
+  private void processingDB(){
+  try {
+			
+		loadDB= new ProgressDialog(this);
+    	loadDB.setMessage("Silahkan Tunggu Sebentar");
+		dm = new DatabaseManager(this);
+		dm.writeDB();
+		dm.deleteAllDataAngkot();
+		dm.insertDataAngkot();
+		dm.close();
+		dm = new DatabaseManager(this);
+		dm.readDB();
+		
+		} catch (Exception e){
+			Toast.makeText(this, "Database gagal diproses", 4000).show();
+		}
+  
+  }
+  
 	private void ambilData() {
 		// TODO Auto-generated method stub
-		final ArrayList<ArrayList<Object>> data = dm.ambilSemuaBaris();
-		kodeangkot = new String[data.size()];
-		for (int posisi = 0; posisi < data.size(); posisi++) {
- 
-			ArrayList<Object> baris = data.get(posisi);
-			kodeangkot[posisi] = baris.get(1).toString();
- 
-		}
-		
-		ArrayAdapter<String> dataKode = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, kodeangkot);
-		lv.setAdapter(dataKode);
-		lv.setOnItemClickListener(new OnItemClickListener(){
+		Cursor cursor = dm.getAllDataAngkot();
+		startManagingCursor(cursor);
+		String[] columns = new String[] {
+				DatabaseManager.KODE_ANGKOT, // --> R.id.kode
+				DatabaseManager.RUTE_ANGKOT,//DatabaseManager.RUTE_ANGKOT, // --> R.id.rute
+				DatabaseManager.BIAYA_ANGKOT,//DatabaseManager.BIAYA_ANGKOT, // --> R.id.biaya
+				DatabaseManager.JAM_MULAI,//DatabaseManager.JAM_MULAI, // --> R.id.mulai
+				DatabaseManager.JAM_SELESAI//DatabaseManager.JAM_SELESAI // --> R.id.sampai
+		};
+		int[] to = new int[] {
+				R.id.kode,
+				R.id.rute,
+				R.id.biaya,
+				R.id.mulai,
+				R.id.sampai
+		};
 
-			public void onItemClick(AdapterView<?> av, View v, int pos,
-					long id) {
-				// TODO Auto-generated method stub
+		adapter = new SimpleCursorAdapter(this, R.layout.viewrowangkot,
+				cursor, columns, to);
+
+		listview = (ListView) findViewById(R.id.listViewAngkot);
+		listview.setAdapter(adapter);
+
+		listview.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> listView, View view,
+					int position, long id) {
+				Cursor cursor = (Cursor) listView.getItemAtPosition(position);
+				String selectedKode = cursor.getString(cursor.getColumnIndexOrThrow("kodeangkot"));
+				String selectedRute = cursor.getString(cursor.getColumnIndexOrThrow("ruteangkot"));
+				//Toast.makeText(getApplicationContext(), selectedRute,Toast.LENGTH_LONG).show();
 				
-				String angkot = lv.getItemAtPosition(pos).toString();
-				
-				for(int i = 0; i<data.size();i++){
-					if(angkot.equals(kodeangkot[i])){
-						pos = i;
-						break;
-					}
-				}
-				String valPos = String.valueOf(pos);
-				if(kodeangkot[pos].equals(valPos)){
-					Toast.makeText(getApplicationContext(),
-						      "Click ListItem Number " + valPos, Toast.LENGTH_LONG)
-						      .show();
-				Intent in = new Intent(DaftarAngkot.this, DetailAngkot.class );
-				startActivity(in);
-				
-				}
+				AlertDialog.Builder build = new AlertDialog.Builder(DaftarAngkot.this);
+				build.setTitle(selectedKode);
+				build.setMessage(selectedRute);
+				build.setPositiveButton("Kembali", null);
+				build.show();
 			}
 		});
-		
-	}
+				
 }
 
 
