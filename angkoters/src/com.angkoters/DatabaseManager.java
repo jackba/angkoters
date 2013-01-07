@@ -14,19 +14,27 @@ public class DatabaseManager{
   private static String KODE_ANGKOT = "kodeangkot";
   private static String RUTE_ANGKOT = "ruteangkot";
   private static int BIAYA_ANGKOT;
-  private static String JAM_BERANGKAT = "jamberangkat";
-  privte static String JAM_PULANG = "jampulang";
+  private static String JAM_MULAI = "jambselesai";
+  private static String JAM_SELESAI = "jamselesai";
 	
+  private static final String NAMA_DB = "AngkotersBaru";
+	private static final String NAMA_TB = "DataAngkotBaru";
+	private static final int VERSI_DB = 1;
 
   private Context context;
   private SQLiteDatabase db;
   private DatabaseOpenHelper dbHelper;
-  private Cursor hasilQuery;
    
+  private static final String DATABASE_CREATE =
+			  "CREATE TABLE if not exists " + NAMA_TB + "( "+ID+" INTEGER PRIMARY KEY AUTOINCREMENT,"+
+					  KODE_ANGKOT+" TEXT," +
+					  RUTE_ANGKOT+" TEXT, "+
+					  BIAYA_ANGKOT+" TEXT, "+
+					  JAM_MULAI+" TEXT, "+
+					  JAM_SELESAI+" TEXT);";
+  
 	public DatabaseManager(Context ctx) {
 		this.context = ctx;
-    dbHelper = new DataseOpenHelper(context);
-    db = dbHelper.getWritableDatabase();
 	}
    
   private static class DatabaseOpenHelper extends SQLiteDatabase{
@@ -37,35 +45,59 @@ public class DatabaseManager{
 
        @Override
        public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
-        db.execSQL("DROP TABLE IF EXISTS"+namaTabel);
-        onCreate(db);
+       // db.execSQL("DROP TABLE IF EXISTS"+namaTabel);
+       // onCreate(db);
 		
      }
   }	
+  
+  public DatabaseManager readDB() throws SQLException {
+		dbHelper = new DBOpenHelper(context,  NAMA_DB, null, VERSI_DB);
+		db = dbHelper.getReadableDatabase();
+		return this;
+	}
+   
+   public DatabaseManager writeDB() throws SQLException {
+		dbHelper = new DBOpenHelper(context, NAMA_DB, null, VERSI_DB );
+		db = dbHelper.getWritableDatabase();
+		return this;
+	}
 	
 	public Cursor getDataAngkot(){
 		return(getReadableDatabase().rawQuery("SELECT * FROM namaTabel",null));
 	}
 	
-	 public String getIdAngkot(Cursor cur){
-		return cur.getString(0);
+	 public static getIdAngkot(){
+		return ID;
 	}
 	
-   public String getKodeAngkot(Cursor cur){
-		return cur.getString(1);
+   public static getKodeAngkot(){
+		return KODE_ANGKOT;
 	}
    
    public void closeDB(){
-     if(dbHelper != null){
      dbHelper.close();
     }
   }
 	
-   public String getRuteAngkot(Cursor cur){
-		return cur.getString(2);
+   public static getRuteAngkot(){
+		return RUTE_ANGKOT;
 	}
    
-   public void buatTabel(String kodeangkot, String ruteangkot,
+   public static getBiayaAngkot(){
+		return BIAYA_ANGKOT;
+	}
+   
+   public static getJamMulai(){
+		return JAM_MULAI;
+	}
+   
+   
+   public static getJamSelesai(){
+		return JAM_SELESAI;
+	}
+   
+   public long setDataAngkot(String kodeangkot, String ruteangkot,
 			String biayaangkot, String jammulai, String jamselesai) {
 
 		ContentValues isiBaris = new ContentValues();
@@ -74,15 +106,8 @@ public class DatabaseManager{
 		isiBaris.put(BIAYA_ANGKOT, biayaangkot);
 		isiBaris.put(JAM_MULAI, jammulai);
 		isiBaris.put(JAM_SELESAI, jamselesai);
-		try {
-			 
-			// db.delete(NAMA_TABEL, null, null);
-			db.insert(NAMA_TABEL, null, isiBaris);
-		} catch (Exception e) {
-
-			Toast.makeText(context, "DB Error, " + e.toString(),
-					Toast.LENGTH_LONG).show();
-		}
+		
+    return db.insert(NAMA_TB, null, initialValues);
 		
 	}
    
@@ -106,48 +131,23 @@ public class DatabaseManager{
 		return cur;
 
 	}
-   
-   public Cursor getDataAngkot() {
-
-		hasilQuery = db.query(NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
+      
+   public Cursor getALLDataAngkot() {
+		Cursor cursorALL = db.query(NAMA_TABEL, new String[] { ID, KODE_ANGKOT,
 				RUTE_ANGKOT, BIAYA_ANGKOT, JAM_MULAI, JAM_SELESAI }, null,
 				null, null, null, null);
-
-		if (hasilQuery != null) {
-			hasilQuery.moveToFirst();
 		}
-		return hasilQuery;
+		return cursorALL;
 	}
    
-     public ArrayList<ArrayList<Object>> ambilSemuaBaris(){
-     ArrayList<ArrayList<Object>> dataArray = new ArrayList<ArrayList<Object>>();
-     Cursor cur;
-     
-    try
-    {
-      cur = db.query(namaTabel, new String[]{ID, KODE_ANGKOT, RUTE_ANGKOT},null,null,null,null,null);
-      cur.moveToFirst();
-      if(!cur.isAfterLast()){
-        do{
-        ArrayList<Object> dataList = ArrayList<Object>();
-        dataList.add(cur.getString(0));
-        dataList.add(cur.getString(1));
-        dataList.add(cur.getString(2));
-        
-        dataArray.add(dataList);
-        } while (cur.moveToNext());
-        }
-      
-    } catch(Exception e){
-      e.printStackTrace();
-      
-    }
-    return dataArray;
-  }
-  
-  public void isiTabel() {
+    public int deleteAllDataAngkot() {
+		int a = db.delete(NAMA_TB, null, null);
+		return a;
 
-		buatTabel(
+	}
+  public void insertDataAngkot() {
+
+		setDataAngkot(
 				"C",
 				"Demak - Blauran - Karangmenjangan"
 						+ "Berangkat : Terminal Jl. Sedayu - Demak - Dupak - Ps. Turi - Semarang - Kranggan - Praban - "
