@@ -30,7 +30,7 @@ public class DaftarAngkot extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.viewdaftarangkot);   
-  	﻿ processingDB();
+  	  processingDB();
 		ambilData();
 	} 
   
@@ -91,6 +91,22 @@ public class DaftarAngkot extends Activity {
 				build.setMessage(selectedRute);
 				build.setPositiveButton("Kembali", null);
 				build.show();
+			}
+		});
+      
+      EditText myFilter = (EditText) findViewById(R.id.myFilter);
+		myFilter.addTextChangedListener(new TextWatcher() {
+
+			public void afterTextChanged(Editable s) {
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				adapter.getFilter().filter(s.toString());
 			}
 		});
 				
